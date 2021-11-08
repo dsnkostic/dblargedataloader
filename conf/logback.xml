@@ -1,0 +1,17 @@
+<configuration>
+    <!-- Plain text logging for local development. -->
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date %-35.35thread{15} %highlight(%-5level) %-25.25logger{15} - %message%n%xException{10}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Define package-specific log levels -->
+    <logger name="akka" level="WARN"/>
+    <logger name="play" level="INFO" />
+    <logger name="com.zaxxer.hikari" level="DEBUG" />
+
+     <root level="INFO">
+        <appender-ref ref="consoleAppender"/>
+    </root>
+</configuration>
