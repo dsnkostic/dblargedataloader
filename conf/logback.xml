@@ -1,5 +1,6 @@
+<!-- I do not like supplied logger, so I always overwrite the default one with this one -->
 <configuration>
-    <!-- Plain text logging for local development. -->
+    <!-- Plain text logging for local development -->
     <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%date %-35.35thread{15} %highlight(%-5level) %-25.25logger{15} - %message%n%xException{10}</pattern>

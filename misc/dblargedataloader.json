@@ -1,0 +1,281 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "dblargedataloader",
+    "description": "Small rest API web app that generates large chunk of test data in the database",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:9000"
+    }
+  ],
+  "tags": [ {
+    "name": "pulse",
+    "description": "Check if application is alive"
+  }, {
+    "name": "creation",
+    "description": "Data creation endpoints"
+  }, {
+    "name": "deletion",
+    "description": "Delete all data"
+  }],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["pulse"],
+        "summary": "Check if application is alive",
+        "operationId": "index",
+        "responses": {
+          "200": {
+            "description": "If you receive anything then application is properly running",
+            "content": {
+              "text/plain" : {
+                "example": "cool"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/create": {
+      "post": {
+        "tags": ["creation"],
+        "summary": "Generate database rows for given companies, their departments and the number of requests",
+        "operationId": "create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "You will receive summary of what will be created. Watch application logs to be notified when operation will be done",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/createResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/createbulk": {
+      "post": {
+        "tags": ["creation"],
+        "summary": "Generate database rows for given companies, but with the option to specify number of requests for each department in the array",
+        "operationId": "createBulk",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createBulkRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "You will receive summary of what will be created. Watch application logs to be notified when operation will be done",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/createResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deleteall": {
+      "post": {
+        "tags": ["deletion"],
+        "summary": "Delete all rows from the database",
+        "operationId": "deleteAll",
+        "responses": {
+          "200": {
+            "description": "Information on how many requests were deleted",
+            "content": {
+              "text/plain" : {
+                "example": "Number of requests deleted: 8350"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "createRequest": {
+        "type": "object",
+        "description": "How many companies to create",
+        "properties": {
+          "companies": {
+            "type": "array",
+            "required": true,
+            "description": "Array that holds companies",
+            "items": {
+              "$ref": "#/components/schemas/companyRequest"
+            }
+          }
+        }
+      },
+      "companyRequest": {
+        "type": "object",
+        "description": "Which company to create and with how many departments",
+        "properties": {
+          "companyID": {
+            "type": "string",
+            "required": true,
+            "description": "ID of the company",
+            "example": "Company1"
+          },
+          "departments": {
+            "type": "array",
+            "required": true,
+            "description": "Array that holds departments of this company",
+            "items": {
+              "$ref": "#/components/schemas/departmentRequest"
+            }
+          }
+        }
+      },
+      "departmentRequest": {
+        "type": "object",
+        "description": "Which department to create and with how many requests",
+        "properties": {
+          "departmentID": {
+            "type": "string",
+            "required": true,
+            "description": "ID of the department",
+            "example": "PhysicsDepartment"
+          },
+          "numberOfRequests" : {
+            "type": "integer",
+            "required": true,
+            "description": "Number of requests that we want to create for this department",
+            "example": 100
+          }
+        }
+      },
+      "createBulkRequest": {
+        "type": "object",
+        "description": "How many companies to create",
+        "properties": {
+          "companies": {
+            "type": "array",
+            "required": true,
+            "description": "Array that holds companies",
+            "items": {
+              "$ref": "#/components/schemas/companyBulkRequest"
+            }
+          }
+        }
+      },
+      "companyBulkRequest": {
+        "type": "object",
+        "description": "Which company to create and with how many requests per each department",
+        "properties": {
+          "companyID": {
+            "type": "string",
+            "required": true,
+            "description": "ID of the company",
+            "example": "Company1"
+          },
+          "departmentBase": {
+            "type": "string",
+            "required": true,
+            "description": "Base ID of the department on which numbers will be attached",
+            "example": "PhysicsDep_"
+          },
+          "departmentRequests" : {
+            "type": "array",
+            "required": true,
+            "description": "Number of requests that we want to create for each department",
+            "items": {
+              "type": "integer",
+              "example": 200
+            }
+          }
+        }
+      },
+      "createResponse": {
+        "type": "object",
+        "description": "Summary of what will be created in this request",
+        "properties": {
+          "totalNumberOfRequests": {
+            "type": "integer",
+            "description": "Total number of requests that will be created in this request",
+            "example": 80000
+          },
+          "numberOfCompanies": {
+            "type": "integer",
+            "description": "Number of companies that will be created in this request",
+            "example": 6
+          },
+          "companies": {
+            "type": "array",
+            "description": "Array that holds companies",
+            "items": {
+              "$ref": "#/components/schemas/companyResponse"
+            }
+          }
+        }
+      },
+      "companyResponse": {
+        "type": "object",
+        "description": "Company that will be created",
+        "properties": {
+          "companyID": {
+            "type": "string",
+            "description": "ID of the company",
+            "example": "Company1"
+          },
+          "numberOfRequests": {
+            "type": "integer",
+            "description": "Total number of requests that will be created for this company",
+            "example": 10000
+          },
+          "numberOfDepartments": {
+            "type": "integer",
+            "description": "Number of departments that will be created for this company",
+            "example": 10
+          },
+          "departments": {
+            "type": "array",
+            "description": "Array of departments that will be created for this company",
+            "items": {
+              "$ref": "#/components/schemas/departmentResponse"
+            }
+          }
+        }
+      },
+      "departmentResponse": {
+        "type": "object",
+        "description": "Department that will be created",
+        "properties": {
+          "departmentID": {
+            "type": "string",
+            "description": "ID of the department",
+            "example": "PhysicsDepartment"
+          },
+          "numberOfRequests" : {
+            "type": "integer",
+            "description": "Number of requests that will be created for this department",
+            "example": 100
+          }
+        }
+      }
+    }
+  }
+}

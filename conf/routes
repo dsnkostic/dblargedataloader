@@ -3,4 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.MainController.index
+GET       /                           controllers.MainController.index
+POST      /create                     controllers.MainController.create(request: Request)
+POST      /createbulk                 controllers.MainController.createBulk(request: Request)
+POST      /deleteall                  controllers.MainController.deleteAll
